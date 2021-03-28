@@ -1,5 +1,6 @@
 import Octet from './Octet';
 import Netmask from './Netmask';
+import SubnetNumbersInput from './SubnetNumbersInput';
 import React, { useState } from 'react';
 import {IPv4} from './lib/ipv4';
 import './IPv4Addr.css';
@@ -10,6 +11,7 @@ const IPv4Addr = (props) => {
   const [validAddress, setValidAddress] = useState(true);
   const [showSubnetting,setShowSubnetting] = useState(true);
   const [subnetsNumber,setSubnetsNumber] = useState(0);
+  const [validSubnetNumber, setValidSubnetNumber] = useState(true);
 
   const setOctet = (octet,index,change) => {
     let updatedAddress = [...ipv4.address];
@@ -22,6 +24,12 @@ const IPv4Addr = (props) => {
   const setNetmask = (netmask,change) => {
     if (change) {
       setIpv4(new IPv4(ipv4.address,netmask));
+    }
+  };
+
+  const setNumberOfSubnets = (subnetsNumber,change) => {
+    if (change) {
+      setSubnetsNumber(subnetsNumber);
     }
   };
 
@@ -53,10 +61,10 @@ const IPv4Addr = (props) => {
                 <div>
                   max number of subnets: {ipv4.numberOfPossibleSubnets()} with a minimum of 4 addreses (minus Network, broadcast, 2 available addresses)
                   closest: {ipv4.getClosestPowerOfTwo(subnetsNumber)}
-                  <input
-                    type="text"
+                  <SubnetNumbersInput 
                     value={subnetsNumber}
-                    onChange={ e => setSubnetsNumber(e.target.value) }
+                    onChange={setNumberOfSubnets}
+                    maxNumberOfSubnets={ipv4.numberOfPossibleSubnets()}
                   />
                   {displayNetmasks(ipv4.breakIntoSubnets(subnetsNumber))}
                 </div>
