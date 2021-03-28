@@ -27,6 +27,12 @@ class IPv4 {
     }).join('.')
   }
 
+  getOnlyBinnary() {
+    return this.address.map((octet,index) => {
+      return octet.toString(2).padStart(8,'0');
+    }).join("");
+  }
+
   getFullAddress() {
     if (this.fullAddress !== "") {
       return this.fullAddress;
@@ -74,7 +80,6 @@ class IPv4 {
     const fullAddress = this.getFullAddress();
     const netmask = parseInt((1 << (32 - this.mask)).toString(2).padStart(32,"1"),2);
     const broadcast = ~( netmask >>> 0);
-    ;;console.log("broadcast", broadcast,broadcast.toString(2),fullAddress.toString(2), (fullAddress | netmask) >>> 0);
     const broadcastAddress = ((fullAddress | broadcast) >>> 0 ).toString(2).padStart(32,"0").match(/.{1,8}/g);
 
     const intBroadcastAddress =  broadcastAddress.map((octet) => {
@@ -100,6 +105,50 @@ class IPv4 {
 
   availableCount(reserved = this.reserved) {
     return this.count() - reserved;
+  }
+
+  getClosestPowerOfTwo(number) {
+    let strNumber = (+number).toString(2);
+    let len = strNumber.length;
+    let masking = (parseInt(strNumber.substring(1),2) >>> 0);
+    if(masking > 0) {
+      return (( 1 << len) >>> 0);
+    }
+    return number;
+  }
+
+  breakIntoSubnets(number) {
+    if (this.numberOfPossibleSubnets < number || number <= 0 ) {
+      return [`Can't break into ${number} subnets`];
+    }
+    let subnets = [];
+    let closestNumber = +(this.getClosestPowerOfTwo(number)); //e.g. 8 - 1000
+    let len = (+closestNumber).toString(2).length - 1; // to get the max number of elements for the next power of two.
+    let additionalMask = (parseInt("1".repeat(len),2) << (32 - this.mask - len)) >>> 0; // e.g. 111 if we have number be 8
+    const netmask = parseInt((1 << (32 - this.mask)).toString(2).padStart(32,"1"),2); // the current netmask in binary
+    const newNetmask = this.mask + len;
+    let maxNetmask = (netmask | additionalMask) >>> 0;
+    let currentSubnet = netmask;
+    let currentOctets = this.address;
+    while (currentSubnet <= maxNetmask) {
+      let currIpv4 = new IPv4(currentOctets,newNetmask);
+      subnets.push({
+					networkAddress: currIpv4.networkAddress(),
+					netmask: newNetmask,
+					count: currIpv4.count()
+			});
+      currentSubnet += currIpv4.count();
+      const nextSubnet = parseInt(currIpv4.getOnlyBinnary(),2) + currIpv4.count();
+      const strCurrentOctets = nextSubnet.toString(2).padStart(32,"0").match(/.{1,8}/g);
+      currentOctets =  strCurrentOctets.map((octet) => {
+        return parseInt(octet,2);
+      });
+    }
+    return subnets;
+  }
+
+  numberOfPossibleSubnets() {
+    return 2**(30 - this.mask);
   }
 }
 

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import "./Octet.css";
+import "./Netmask.css";
 
-const Octet = (props) => {
+const Netmask = (props) => {
   const [message,setMessage] = useState("");
-  const [isValid,setIsValid] = useState(props.value < 255);
+  const [isValid,setIsValid] = useState(true);
 
-  const validClass = isValid ? 'valid' : 'invalid';
-  const classes = `octet ${validClass}`;
+  const validClass = isValid? 'valid' : 'invalid';
+  const classes = `netmask ${validClass}`;
 
   return (
     <div className={classes} >
@@ -15,7 +15,7 @@ const Octet = (props) => {
         value={props.value}
       onChange={e => {
         let change = false;
-        if (e.target.value < 0 || e.target.value > 255) {
+        if (e.target.value < 0 || e.target.value > 32) {
           change = true;
           setIsValid(false);
           props.setValid(false);
@@ -28,7 +28,7 @@ const Octet = (props) => {
           setIsValid(true);
           props.setValid(true);
         }
-        props.changeFunction(e.target.value, props.index, change);
+        props.changeFunction(e.target.value, change);
       }
       }
       />
@@ -37,4 +37,4 @@ const Octet = (props) => {
   );
 }
 
-export default Octet;
+export default Netmask;
