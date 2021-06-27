@@ -20,7 +20,7 @@ const Netmask = (props) => {
           setIsValid(false);
           props.setValid(false);
           setMessage('incorrect value');
-        } else if (e.target.value == "" || isNaN(e.target.value)) {
+        } else if (e.target.value === "" || isNaN(e.target.value)) {
           change = false;
           //stay the same
         } else {

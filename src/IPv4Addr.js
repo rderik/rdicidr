@@ -35,20 +35,65 @@ const IPv4Addr = (props) => {
 
 	const displayNetmasks = (netmasks) => {
 		let netmasksElements = [];
-		netmasks.forEach((e) => {
-			netmasksElements.push(<div>{e.networkAddress}/{e.netmask} ({e.count} hosts)</div>);
+		netmasks.forEach((e,index) => {
+			netmasksElements.push(<div key={`networkAddress-${index}`}>{e.networkAddress}/{e.netmask} ({e.count} hosts)</div>);
 		});
 		return netmasksElements;
 	};
 
   return (
     <div>
-        <h1>CIDR:</h1>
       <div className='address-container'>
         {ipv4.address.map((octet,index) => {
-          return <div className='octet-container'><Octet key={index} value={octet} index={index} setValid={setValidAddress} changeFunction={setOctet} />{ (index < 3) ? <span>.</span> : <span className='slash'>/</span> }</div>
+          return <div className='octet-container' key={`oct-container-${index}`} ><Octet value={octet} index={index} setValid={setValidAddress} changeFunction={setOctet} />{ (index < 3) ? <span>.</span> : <span className='slash'>/</span> }</div>
         })} <Netmask value={ipv4.mask} setValid={setValidAddress} changeFunction={setNetmask} />
       </div>
+
+      { validAddress ? <div className="results">
+        <div>
+          <strong>Binary:</strong>
+          <span>{ipv4.getBinnary()}</span>
+        </div>
+        <div>
+          <strong>Network Address:</strong>
+          <span>{ipv4.networkAddress()}</span>
+        </div>
+        <div>
+          <strong>First usable address:</strong>
+          <span>{ipv4.firstUsableAddress()}</span>
+        </div>
+        <div>
+          <strong>First usable address(AWS):</strong>
+          <span>{ipv4.firstUsableAddress(3)}</span>
+          <br />
+          <span>AWS reserves first four addresses for: Network, Router, DNS, Future use</span>
+        </div>
+        <div>
+          <strong>Last usable address:</strong>
+          <span>{ipv4.lastUsableAddress()}</span>
+        </div>
+        <div>
+          <strong>Broadcast Address:</strong>
+          <span>{ipv4.broadcastAddress()}</span>
+        </div>
+        <div>
+          <strong>Netmask:</strong>
+          <span>{ipv4.netmask()}</span>
+        </div>
+        <div>
+          <strong>Count:</strong>
+          <span>{ipv4.count()}</span>
+        </div>
+        <div>
+          <strong>Usable addresses:</strong>
+          <span>{ipv4.availableCount()}</span>
+        </div>
+        <div>
+          <strong>Usable addresses(AWS):</strong>
+          <span>{ipv4.availableCount(5)}</span>
+        </div>
+      </div> : "" }
+
       <div className="subnets">
         Break into subnets:
           <input
@@ -57,66 +102,24 @@ const IPv4Addr = (props) => {
             checked={showSubnetting}
             onChange={ e => { setShowSubnetting(e.target.checked) }}
           />
+            <br/>
+            <br/>
             { showSubnetting ?
-                <div>
+                <div id="details">
                   max number of subnets: {ipv4.numberOfPossibleSubnets()} with a minimum of 4 addreses (minus Network, broadcast, 2 available addresses)
                   closest: {ipv4.getClosestPowerOfTwo(subnetsNumber)}
-                  <SubnetNumbersInput 
+                  <div id="subnet-input-container">
+                    <SubnetNumbersInput 
                     value={subnetsNumber}
                     onChange={setNumberOfSubnets}
                     maxNumberOfSubnets={ipv4.numberOfPossibleSubnets()}
                   />
-                  {displayNetmasks(ipv4.breakIntoSubnets(subnetsNumber))}
+                      {displayNetmasks(ipv4.breakIntoSubnets(subnetsNumber))}
+                  </div>
                 </div>
               : ""
           }
       </div>
-
-      { validAddress ? <div className="results">
-        <div>
-          {
-            ipv4.getBinnary()
-          }
-        </div>
-        <div>
-          Network Address:
-          <span>{ipv4.networkAddress()}</span>
-        </div>
-        <div>
-          First usable address:
-          <span>{ipv4.firstUsableAddress()}</span>
-        </div>
-        <div>
-          First usable address(AWS):
-          <span>{ipv4.firstUsableAddress(3)}</span>
-          <br />
-          <span>AWS reserves first four addresses for: Network, Router, DNS, Future use</span>
-        </div>
-        <div>
-          Last usable address:
-          <span>{ipv4.lastUsableAddress()}</span>
-        </div>
-        <div>
-          Broadcast Address:
-          <span>{ipv4.broadcastAddress()}</span>
-        </div>
-        <div>
-          Netmask:
-          <span>{ipv4.netmask()}</span>
-        </div>
-        <div>
-          Count:
-          <span>{ipv4.count()}</span>
-        </div>
-        <div>
-          Usable addresses:
-          <span>{ipv4.availableCount()}</span>
-        </div>
-        <div>
-          Usable addresses(AWS):
-          <span>{ipv4.availableCount(5)}</span>
-        </div>
-      </div> : "" }
     </div>
   );
 }

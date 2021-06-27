@@ -11,6 +11,7 @@ const SubnetNumbersInput = (props) => {
 
   return (
     <div className={classes} >
+      Number of subnets: 
       <input 
         type='text'
         value={props.value}
@@ -20,7 +21,9 @@ const SubnetNumbersInput = (props) => {
           change = true;
           setIsValid(false);
           setMessage('incorrect number of subnets');
-        } else if (e.target.value == "" || isNaN(e.target.value)) {
+        } else if (e.target.value === "") {
+          change = true;
+        } else if (isNaN(e.target.value)) {
           change = false;
           //stay the same
         } else {

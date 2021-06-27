@@ -32,4 +32,29 @@ input[type=text].net-mask {
 .address-container {
   width: 300px;
   height: 33px;
+  margin: 10px auto 10px;
+}
+
+.subnets {
+  text-align: center;
+  margin: 20px auto 10px;
+}
+
+#details {
+  text-align: left;
+  width: 600px;
+  margin: 0 auto;
+}
+
+#subnet-input-container {
+  margin: 10px 0 10px 0;
+}
+
+.results {
+  width: 600px;
+  text-align: left;
+  margin: 0 auto;
+}
+.results span {
+  margin-left: 10px;
 }
