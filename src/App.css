@@ -35,3 +35,12 @@
     transform: rotate(360deg);
   }
 }
+.App footer {
+  margin-top: 20px;
+  text-align: center;
+  font-size: calc(0px + 2vmin);
+}
+
+.App footer hr{
+  width: 60%;
+}
