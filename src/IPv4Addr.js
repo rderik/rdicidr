@@ -11,7 +11,6 @@ const IPv4Addr = (props) => {
   const [validAddress, setValidAddress] = useState(true);
   const [showSubnetting,setShowSubnetting] = useState(true);
   const [subnetsNumber,setSubnetsNumber] = useState(0);
-  const [validSubnetNumber, setValidSubnetNumber] = useState(true);
 
   const setOctet = (octet,index,change) => {
     let updatedAddress = [...ipv4.address];

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import "./SubnetNumbersInput.css";
 
 const SubnetNumbersInput = (props) => {
-  const [maxNumberOfSubnets,setMaxNumberOfSubnets] = useState(props.maxNumberOfSubnets);
   const [message,setMessage] = useState("");
   const [isValid,setIsValid] = useState(props.value < props.maxNumberOfSubnets);
 
