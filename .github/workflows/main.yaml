@@ -1,0 +1,49 @@
+# The following is the GitHub Action definition to build and deploy
+# my static page website generated using middleman
+name: Deploy Site
+on:
+    push:
+      branches:
+        - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Install Node
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      # Install dependencies
+      - name: install
+        run: npm ci
+
+      # Build the site
+      - name: Build
+        run: npm build
+
+      - name: set up ssh keys for rsyn deployment
+        env:
+          DEPLOY_SSH_KEY_BASE64: ${{ secrets.DEPLOY_SSH_KEY_BASE64 }}
+          PROD_FINGER_PRINT: ${{ secrets.PROD_FINGER_PRINT }}
+        run: |
+          mkdir -p ~/.ssh/
+          touch ~/.ssh/known_hosts
+          echo $PROD_FINGER_PRINT >> ~/.ssh/known_hosts
+          echo $DEPLOY_SSH_KEY_BASE64 | base64 --decode > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      # Deploy the site
+      - name: Deploy
+        run: |
+          rsync -zrvh -e 'ssh -p 7822' build/ rderik@rderik.com:rdicidr.rderik.com/
+
+
+
