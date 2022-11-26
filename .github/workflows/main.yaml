@@ -27,7 +27,7 @@ jobs:
 
       # Build the site
       - name: Build
-        run: npm build
+        run: npm run build
 
       - name: set up ssh keys for rsyn deployment
         env:
